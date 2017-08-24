@@ -1,0 +1,192 @@
+I)	Intro to React: Tutorial
+A)	Overview
+•	What is React?
+•	Declarative, efficient, flexible JS lib for UI
+(i)	React.Component
+•	Ex:
+
+•	Component tell react what to render
+•	React will update, render when data change (specific parts)
+•	Shopping list = React component class (React component type)
+•	Component takes parameters called props
+•	Return hierarchy of views to display via the render method
+•	Render takes des of what you want to render,
+•	React takes des and renders it to screen
+•	Render returns a react element (simplified version)
+•	React developers use special syntax (JSX) = easier to write structures
+
+•
+
+<div />  syntax is
+
+
+
+
+
+
+
+
+
+
+
+
+•	the two are the same
+•	can put any JS expression with braces inside JSX
+•	each react element is a real JS obj that can store in a variable or pass around your program
+•	shoppingList component only renders built in Dom components
+•	can compose custom react components just as easily by writing <ShoppingList />
+•	each component is encapsulated so it can operate independently
+
+
+
+
+
+
+
+
+
+•	Getting Started
+•	We have 3 components
+(i)	Square
+•	Renders a single button
+(ii)	Board
+•	Renders 9 squares
+(iii)	Game
+•	Renders board with placeholders
+•	None of components interact now
+B)	Passing Data Through Props
+C)	An Interactive Component
+•	React component can have state by setting this.state in constructor
+•	State is private to component
+•	This.setState is called = update to component is scheduled
+•	React merge passed state, update, render component with descendants
+
+D)	Lifting State Up
+•	State is encapsulated in each square components
+•	Need to have value of all 9 squares in one place
+•	Best way to store state in board component
+•	Board can tell each square what  to display
+•	Bold Words From FB so it must be important
+•	“When you want to aggregate data from multiple children or to have two child components communicate with each other, move the state upwards so that it lives in the parent component. The parent can then pass the state back down to the children via props, so that the child components are always in sync with each other and the parent”
+•	board now stores which squares are filled
+•	since component state
+•	need some way for square to update to state of board
+•	since component state is considered private, can’t update Board’s state directly from Square
+•	pass down function from Board to Square, to get called on when square is clicked
+•	what is happending?
+(i)	onClick prop on Built in DOM <buton> tells React to set up a click event listener
+(ii)	React will call onClick event handler defined in Square’s render()
+(iii)	Event handler calls this.props.onClick(). Square props were specified by board
+(iv)	Board passed onClick={() => this.handleClick(i)} to Square, so it runs Handleclick(i) on Board
+(v)	Code will crash cuz don’t have handleclick()
+•	onClick on DOM (button) component has special meaning to react
+•	convetion is to use onNames for handler prop names, handleNames for implementation
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E)	Why Immutability Is Important
+•	Use .slice() to copy squares array prior to making changes and to prevent mutating the existing array
+•	2 ways to do it
+(i)	mutate the data by directly changing the values of a variable
+
+(ii)	replace the data with new copy of object that also include desired changes
+
+
+•	better cuz benefit in increasing component and overall app performance
+•	Benefits
+(i)	Easier undo, redo and time travel
+•	Makes complex features much easier to implement
+•	Can do time travel between diff stages of the game
+•	Avoiding data mutations let us keep reference to older versions of data
+•	Switch them if we need to
+
+
+(ii)	Tracking changes
+•	Complicated to compare mutable obj
+•	Easy to see history of immutable obj cuz have reference to before and after
+(iii)	Determining When to re-render in react
+•	Biggest benefit is when you build simple pure components
+•	Immutable data can more easily determine if changes have been made, helps determine when a component requires being re-rendered
+F)	Functional Components
+•	Functional components: components with only render
+•	Can simply just take props and return what should be rendered
+•	Ex:
+
+•	Need to change this.props to props both time it appears
+•	F components are easier to write, React will optimize them more in the future
+•	Change   onClick{() => props.onClick()}  to    onClick={props.onClick}
+•	Pass function down
+
+G)	Taking Turns
+•	Default first move to be by X
+
+
+
+
+
+H)	Storing a History
+•	We aleady create new squares array each time a move is made
+•	So can easily store past board states simultaneously
+
+•	Want top level component to be responsible for displaying the list of moves
+•	Want top level Game component to be responsible for displaying lists of moves
+•	Pull it up again from Board into Game, so we have all info we need at the top level
+•	Change Board so it takes squares via props and has its own onClick prop specified by Game
+
+
+
+
+I)	Showing the Moves
+•	React elements are first class JS objects = store and pass them around
+•	To render multiple items in React, pass an array of React Elements
+•	The most common way is to map over array of data
+J)	Keys
+•	React always store some info about each item in the list
+•	React stores ref to the backing native views
+•	If render a component that has state, state needs to be stored, react stores ref to the backing views
+•	When update list, React needs to determine  what has changed
+
+•	React as to specify a key property on each element in a list
+•	Id is usually a good choice
+•	Key is special property that is reverved by React, along with ref (more advanced feature)
+•	When element is created, React pulls of the key property and stores the key directly on the returned element
+•	Can’t be referenced with this.props.key
+•	React uses key auto while deciding which children to update
+•	There is no way for component to inquire about its own key
+•	When list is rerendered, react takes each element in the new version and looks for one with a matching key in the previous list
+•	Wen key is added to the set, a component is created
+•	When key is removed, a component is destroyed
+•	Keys tell React about the id of each component, so it can maintain the state across rerenders
+•	If change the key of a component, it will be completely destroyed and recreated with a new state
+•	“Strongly Recommended that you assign proper keys whenever you build dynamic lists.”
+•	If don’t specify any key, React will warn you and fall back to using the array index as a key
+•	Not good if you reorder elements in list or add/remove items anywhere but the bottom of the list 
+•	Passing key={i}
+•	Silences the warning, but has the same problem
+•	Component keys don’t need to be globally unique, only unique relative to the immediate siblings
+
+K)	Implementing Time Travel
+•	For our move list, already have unique ID for each step
+•	In Game’s render method, add keys as <li key={move}> and key warning should disappear
+•	jumpTo is not defined yet, lets define it
+•	may want to update handleClick to be aware of stepNumber when reading the current board state, so can go back in time when click in the board to create a new entry
+•	hint: easiest to .slice() off the extra elements from history at the very top of handleClick
+
+
+
+
+L)	Wrapping Up
