@@ -35,6 +35,9 @@ class Board extends React.Component {
     // array of squares from state
     const squares = this.state.squares.slice()
 
+    if (calculateWinner(squares) || squares[i]) {
+      return;
+    }
     // neat way to determine which state is Next based on value of xIsNext
     squares[i] = this.state.xIsNext ? 'X' : 'O'
 
@@ -59,8 +62,14 @@ class Board extends React.Component {
   }
 
   render() {
+    const winner = calculateWinner(this.state.squares)
+    let status
+    if (winner) {
+      status = 'Winner: ' + winner
+    } else {
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O')
+    }
     // status is the text to show
-    const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
 
     // call renderSquare to render each square using Square component
     // very interesting thing way to do instead of doing < Square value=1>
@@ -103,6 +112,34 @@ class Game extends React.Component {
       </div>
     );
   }
+}
+
+// very clever way to calculate the winner
+function calculateWinner(squares) {
+  // combination of wins in index combo
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+
+  // loops to check each combo
+  for (let i = 0; i < lines.length; i++) {
+    // const [a,b,c] will be the array based of lines[i]
+    const [a, b, c] = lines[i];
+    // checks to see if mark is placed there
+    // checks to see the combo
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      // returns the winning combo
+      return squares[a]
+    }
+  }
+  return null;
 }
 
 // ========================================
