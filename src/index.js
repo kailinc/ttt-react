@@ -24,14 +24,30 @@ class Square extends React.Component {
 }
 
 class Board extends React.Component {
+  // initialize so that the squares state is set to null
+  constructor() {
+    super()
+    this.state = {
+      squares: Array(9).fill(null)
+    }
+  }
+  // function to use Square component render squares
   renderSquare(i) {
     // pass i into value and use Square component to render each square
-    return <Square value={i} />;
+    // added () around Square so doesn't have ; at the end
+
+    return (<Square
+             value=this.state.squares{i}
+             onClick={() => this.handleClick(i)}
+            />)
   }
 
   render() {
+    // status is the text to show
     const status = 'Next player: X';
 
+    // call renderSquare to render each square using Square component
+    // very interesting thing way to do instead of doing < Square value=1>
     return (
       <div>
         <div className="status">{status}</div>
@@ -56,6 +72,8 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
+  // component that renders everything
+  // starts the chain of rendering, updating
   render() {
     return (
       <div className="game">
