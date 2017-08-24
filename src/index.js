@@ -4,10 +4,20 @@ import './index.css';
 
 
 class Square extends React.Component {
+  // call super to define subclass (JS)
+  constructor() {
+    super()
+    this.state = {
+      value: null
+    }
+  }
   render() {
     return (
-      <button className="square">
-        {/* TODO */}
+      // get value into the button
+      // when click button, set state of square to be {value: 'X'}
+      // gets the value of the square and displays it
+      <button className="square" onClick={() => this.setState({value: 'X'})}>
+        {this.state.value}
       </button>
     );
   }
@@ -15,7 +25,8 @@ class Square extends React.Component {
 
 class Board extends React.Component {
   renderSquare(i) {
-    return <Square />;
+    // pass i into value and use Square component to render each square
+    return <Square value={i} />;
   }
 
   render() {
