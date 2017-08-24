@@ -5,19 +5,16 @@ import './index.css';
 
 class Square extends React.Component {
   // call super to define subclass (JS)
-  constructor() {
-    super()
-    this.state = {
-      value: null
-    }
-  }
   render() {
     return (
       // get value into the button
       // when click button, set state of square to be {value: 'X'}
       // gets the value of the square and displays it
-      <button className="square" onClick={() => this.setState({value: 'X'})}>
-        {this.state.value}
+
+      // pass down two props from Board to Square (value, onClick)
+      // here is to use those things at Square
+      <button className="square" onClick={() => this.props.onClick()}>
+        {this.props.value}
       </button>
     );
   }
@@ -31,13 +28,25 @@ class Board extends React.Component {
       squares: Array(9).fill(null)
     }
   }
+
+  // function to deal with clicks
+  handleClick(i) {
+    // array of squares from state
+    const squares = this.state.squares.slice()
+    // neat way to select the right index and update it
+    squares[i] = 'X';
+    // sets the new state
+    this.setState({squares: squares});
+  }
+
   // function to use Square component render squares
   renderSquare(i) {
     // pass i into value and use Square component to render each square
     // added () around Square so doesn't have ; at the end
 
+    //
     return (<Square
-             value=this.state.squares{i}
+             value={this.state.squares[i]}
              onClick={() => this.handleClick(i)}
             />)
   }
