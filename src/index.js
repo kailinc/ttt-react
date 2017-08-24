@@ -25,7 +25,8 @@ class Board extends React.Component {
   constructor() {
     super()
     this.state = {
-      squares: Array(9).fill(null)
+      squares: Array(9).fill(null),
+      xIsNext: true
     }
   }
 
@@ -33,10 +34,16 @@ class Board extends React.Component {
   handleClick(i) {
     // array of squares from state
     const squares = this.state.squares.slice()
-    // neat way to select the right index and update it
-    squares[i] = 'X';
+
+    // neat way to determine which state is Next based on value of xIsNext
+    squares[i] = this.state.xIsNext ? 'X' : 'O'
+
     // sets the new state
-    this.setState({squares: squares});
+    this.setState({
+      squares: squares,
+      // resets for next iteration
+      xIsNext: !this.state.xIsNext
+    });
   }
 
   // function to use Square component render squares
@@ -53,7 +60,7 @@ class Board extends React.Component {
 
   render() {
     // status is the text to show
-    const status = 'Next player: X';
+    const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
 
     // call renderSquare to render each square using Square component
     // very interesting thing way to do instead of doing < Square value=1>
