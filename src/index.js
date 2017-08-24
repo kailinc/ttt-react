@@ -66,18 +66,21 @@ class Game extends React.Component {
       history: [{
         squares: Array(9).fill(null),
       }],
+      stepNumber: 0,
       xIsNext: true,
     }
   }
 
   // function to deal with clicks
   handleClick(i) {
-    const history = this.state.history
+    // thinking history as immutable makes this possible
+    const history = this.state.history.slice(0, this.state.stepNumber + 1)
     const current = history[history.length - 1]
 
-    // array of squares from state
+    // array of squares of that place in history
     const squares = current.squares.slice()
 
+    // error handling for winner or not existant
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
@@ -89,22 +92,36 @@ class Game extends React.Component {
       history: history.concat([{
         squares: squares
       }]),
+      stepNumber: history.length,
       // resets for next iteration
       xIsNext: !this.state.xIsNext
     });
+  }
+
+  // sets current state to be the place in history you want it to be
+  // changes xIsNext based on the steps
+  // history is unchanged
+  jumpTo(step) {
+    this.setState({
+      stepNumber: step,
+      xIsNext: (step % 2) === 0,
+    })
   }
 
   // component that renders everything
   // starts the chain of rendering, updating
   render() {
     const history = this.state.history;
-    const current = history[history.length - 1];
+    const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
 
+    // generate the link
+    // has a neat way of displaying move or game start
     const moves = history.map((step, move) => {
+      // this determines the text of the link
       const desc = move ? 'Move #' + move : 'Game start';
       return (
-        <li>
+        <li key={move}>
           <a href="#" onClick={() => this.jumpTo(move)}>{desc}</a>
         </li>
       )
