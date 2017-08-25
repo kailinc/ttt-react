@@ -13,6 +13,8 @@ class Square extends React.Component {
 
       // pass down two props from Board to Square (value, onClick)
       // here is to use those things at Square
+      // this.props.onClick() click handler defined in parent
+      // this.props.value is the value passed down from the parent
       <button className="square" onClick={() => this.props.onClick()}>
         {this.props.value}
       </button>
@@ -27,7 +29,10 @@ class Board extends React.Component {
     // pass i into value and use Square component to render each square
     // added () around Square so doesn't have ; at the end
 
-    //
+    // calls on the Square Component
+    // value would be the value of the parent props.square[i]
+    // onclick would run the onClick of the parents this.props.onClick(i)
+    // which is defined in the top level( Game)
     return (<Square
              value={this.props.squares[i]}
              onClick={() => this.props.onClick(i)}
@@ -37,6 +42,7 @@ class Board extends React.Component {
   render() {
     // call renderSquare to render each square using Square component
     // very interesting thing way to do instead of doing < Square value=1>
+    // returns the board
     return (
       <div>
         <div className="board-row">
@@ -62,19 +68,26 @@ class Board extends React.Component {
 class Game extends React.Component {
   constructor() {
     super()
+    // state has history array of objects
     this.state = {
+      // neat way to do array of objects
       history: [{
         squares: Array(9).fill(null),
       }],
+      // number of steps recorded
       stepNumber: 0,
+      // determine whos next
       xIsNext: true,
     }
   }
 
-  // function to deal with clicks
+  // function to deal with clicks,
+  // if there is a winner, prevent clicking
+  // resets state if do time travel
   handleClick(i) {
     // thinking history as immutable makes this possible
     const history = this.state.history.slice(0, this.state.stepNumber + 1)
+    // current place
     const current = history[history.length - 1]
 
     // array of squares of that place in history
@@ -100,7 +113,8 @@ class Game extends React.Component {
 
   // sets current state to be the place in history you want it to be
   // changes xIsNext based on the steps
-  // history is unchanged
+  // history starts at where you jump to
+  // is like undoing a move
   jumpTo(step) {
     this.setState({
       stepNumber: step,
@@ -113,13 +127,21 @@ class Game extends React.Component {
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
+    // x or o
     const winner = calculateWinner(current.squares);
+
 
     // generate the link
     // has a neat way of displaying move or game start
+    // its a function that generates the lists
+    // very clever way of implementing
     const moves = history.map((step, move) => {
-      // this determines the text of the link
+      // neat way to determines the text of the link
+      // if there is no history, the first one will be game start
+      // if there is game history, it will be move #1, 2
       const desc = move ? 'Move #' + move : 'Game start';
+      // return link within li
+      // when clicked will invoke jumpTo(move) function
       return (
         <li key={move}>
           <a href="#" onClick={() => this.jumpTo(move)}>{desc}</a>
@@ -128,12 +150,25 @@ class Game extends React.Component {
     })
 
 
+    // initiate empty var
     let status;
+    // determine stats via winner var, which is determined via calculateWinner
+    // will auto run when history, squares change cuz React
     if (winner) {
       status = 'Winner: ' + winner;
     } else {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
+
+    // part 1:
+    // use Board Component to generate html
+    // set onClick for children to be handleClick, which prevent clicking after winner
+    // also resets history, squares if time travel
+    // set squares to be current state of the game (array)
+
+    // part 2:
+    // status updates according to winner
+    // moves updates according to moves function that generate li of history
     return (
       <div className="game">
         <div className="game-board">
